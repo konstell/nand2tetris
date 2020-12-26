@@ -1,0 +1,15 @@
+CHIP UnaryALU {
+    IN  
+        x[16],  // 16-bit input        
+        z, // zero the x input?
+        n; // negate the x input?
+
+    OUT 
+        out[16]; // 16-bit output
+
+    PARTS:
+    // Put you code here:
+    Mux16(a[0..15]=x, b[0..15]=false, sel=z, out[0..15]=s0);
+    Not16(in=s0, out=ns0);
+    Mux16(a=s0, b=ns0, sel=n, out=out);
+}

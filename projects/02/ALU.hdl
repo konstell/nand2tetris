@@ -26,6 +26,7 @@
 // if (out == 0) set zr = 1
 // if (out < 0) set ng = 1
 
+
 CHIP ALU {
     IN  
         x[16], y[16],  // 16-bit inputs        
@@ -42,5 +43,21 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Put you code here:
+    // Mux16(a[0..15]=x, b[0..15]=false, sel=zx, out[0..15]=s0);
+    // Not16(in=s0, out=ns0);
+    // Mux16(a=s0, b=ns0, sel=nx, out=out);
+    UnaryALU(x=x, z=zx, n=nx, out=xselect);
+    UnaryALU(x=y, z=zy, n=ny, out=yselect);
+    And16(a=xselect, b=yselect, out=xandy);
+    Add16(a=xselect, b=yselect, out=xaddy);
+    Mux16(a=xandy, b=xaddy, sel=f, out=orig);
+    Not16(in=orig, out=notorig);
+    Mux16(a=orig, b=notorig, sel=no, out=ans);
+    Or16(a=ans, b=false, out=out);
+
+    Or16Way(in=ans, out=orans);
+    Not(in=orans, out=zr);
+
+    And16(a=ans, b=true, out[15]=ng);
 }
